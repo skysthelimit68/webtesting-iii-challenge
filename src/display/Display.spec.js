@@ -9,14 +9,16 @@ import Display from './Display';
 
 
 describe('<Display />', () => {
-    it('make sure gates exist and set to default unlocked and open', () => {
+    it('make sure gates exist and set to default unlocked and open, and with green light', () => {
         const { getByText } = render(<Display />);
         getByText(/unlocked/i);
         getByText(/open/i);
+        expect(getByText(/open/i).className).toContain('green-led');
+        expect(getByText(/unlocked/i).className).toContain('green-led');
     })
 
-    it('gate is open, only can be unlocked, shows proper display and color', () => {
-        const { getByText } = render(<Display closed={false}/>);
+    it('gate is open, locked can only be false, shows proper display and color', () => {
+        const { getByText } = render(<Display closed={false} locked={false}/>);
         expect(getByText("Open").className).toContain('green-led')
         expect(getByText("Unlocked").className).toContain('green-led')
        

@@ -3,12 +3,16 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/react/cleanup-after-each';
+import { getByTestId } from '@testing-library/dom'
 
 import Controls from './Controls';
 import Dashboard from '../dashboard/Dashboard';
+import Display from '../display/Display';
 
 describe('<Controls />', () => {
     
+    const container = document.body
+
     //gate is open and unlocked
     it('make sure 2 buttons exist and set to default lock gate and close gate when app starts', () => {
         const { getByText } = render(<Controls />);
@@ -38,34 +42,66 @@ describe('<Controls />', () => {
     })
 
     //check for clicking close gate button when the gate is open and unlocked
-    it('when Close Gate button is clicked, shows all proper response for all buttons and display', () => {
-        const { getByText } = render(<Dashboard closed={false} locked={false}/>)
-        const button = getByText("Close Gate");
-        const openButton = getByText('Open');
-        const unlockButton = getByText("Unlocked");
-        fireEvent.click(button);
-        expect(openButton.textContent).toBe("Closed")
-        expect(unlockButton.textContent).toBe("Unlocked")
-        expect(openButton.className).toContain("red-led")
-        expect(unlockButton.className).toContain("green-led")
+    it('when Close Gate button is clicked, shows all proper response for all buttons and display',  () => {
+        const { getByText } = render(<Controls closed={false} locked={false}/>)
+        const closeButton = getByText('Close Gate');
+        fireEvent.click(closeButton);      
+        const { container } = render(<Display closed={true} locked={false}/>);
+        const closeStatus = getByTestId(container, 'closeStatus');
+        const lockStatus = getByTestId(container,'lockStatus');
+        expect(closeStatus.textContent).toBe("Closed")
+        expect(lockStatus.textContent).toBe("Unlocked")
+        expect(closeStatus.className).toContain("led red-led")
+        expect(lockStatus.className).toContain("led green-led")
     })
 
     //check for clicking open gate button when the gate is closed and unlocked
-    /*
-    it('when Open Gate button is clicked, shows all proper response for all buttons and display', () => {
-        const { getByText } = render(<Dashboard closed={true} locked={false}/>)
-        const button = getByText("Open Gate");
-        const closeButton = getByText('Closed');
-        const unlockButton = getByText("Unlocked");
-        fireEvent.click(button);
-        expect(closeButton.textContent).toBe("Open")
-        expect(unlockButton.textContent).toBe("Unlocked")
-        expect(closeButton.className).toContain("green-led")
-        expect(unlockButton.className).toContain("green-led")
-    })
-    */
     
+    it('when Open Gate button is clicked, shows all proper response for all buttons and display', () => {
+        const { getByText } = render(<Controls closed={true} locked={false}/>)
+        const closeButton = getByText("Open Gate");
+        fireEvent.click(closeButton);      
+        const { container } = render(<Display closed={false} locked={false}/>);
+        const closeStatus = getByTestId(container, 'closeStatus');
+        const lockStatus = getByTestId(container,'lockStatus');
+        expect(closeStatus.textContent).toBe("Open")
+        expect(lockStatus.textContent).toBe("Unlocked")
+        expect(closeStatus.className).toContain("led green-led")
+        expect(lockStatus.className).toContain("led green-led")
+        
+
+    })
+
+    it('When Lock Gate button is clicked, shows all proper response for all buttons and display', () => {
+        const { getByText } = render(<Controls closed={true} locked={false}/>)
+        const button = getByText("Lock Gate");
+        fireEvent.click(button);      
+        const { container } = render(<Display closed={true} locked={true}/>);
+        const closeStatus = getByTestId(container, 'closeStatus');
+        const lockStatus = getByTestId(container,'lockStatus');
+        expect(closeStatus.textContent).toBe("Closed")
+        expect(lockStatus.textContent).toBe("Locked")
+        expect(closeStatus.className).toContain("led red-led")
+        expect(lockStatus.className).toContain("led red-led")
+        
+    })
+
+    it('when Unlock Gate button is clicked, shows all proper response for all buttons and display',() => {
+        const { getByText } = render(<Controls closed={true} locked={true}/>)
+        const button = getByText("Unlock Gate");
+        fireEvent.click(button);      
+        const { container } = render(<Display closed={true} locked={false}/>);
+        const closeStatus = getByTestId(container, 'closeStatus');
+        const lockStatus = getByTestId(container,'lockStatus');
+        expect(closeStatus.textContent).toBe("Closed")
+        expect(lockStatus.textContent).toBe("Unlocked")
+        expect(closeStatus.className).toContain("led red-led")
+        expect(lockStatus.className).toContain("led green-led")
+    })
+
+
 })
+
 
 
 /*
